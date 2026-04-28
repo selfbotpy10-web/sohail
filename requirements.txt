@@ -1,3 +1,5 @@
-python-telegram-bot==20.7
+# این خط را به requirements.txt اضافه کن یا نسخه را تغییر بده
+
+python-telegram-bot==20.6
 yt-dlp
 ffmpeg-python
