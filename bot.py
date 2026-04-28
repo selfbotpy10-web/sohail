@@ -1,26 +1,35 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# توکن ربات خودت را اینجا بگذار
 TOKEN = "8705315410:AAHFhgOJwRd9WhxIdAgn-Eh3zsIKu372S5k"
 
-async def reply_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# =========================
+# /start
+# =========================
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("سلام 👋\nهر چی بگی، اگر سلام باشه جواب میدم")
+
+# =========================
+# پیام‌ها
+# =========================
+async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
 
-    if text == "سلام":
-        await update.message.reply_text("علیک سلام")
+    if "سلام" in text:
+        await update.message.reply_text("علیک سلام 🤝")
+    else:
+        await update.message.reply_text("فقط وقتی سلام بگی جواب میدم 🙂")
 
+# =========================
+# اجرا (مهم‌ترین بخش)
+# =========================
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            reply_message
-        )
-    )
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
-    print("Bot Started...")
+    print("Bot is running...")
     app.run_polling()
 
 if __name__ == "__main__":
