@@ -11,25 +11,29 @@ import asyncio
 import threading
 import os
 
-# =========================
+# =====================================
 # توکن ربات مادر
-# =========================
-MAIN_BOT_TOKEN = "8792112967:AAEzBOsjy75TlwPl5s6TfE2JrpRztrxyhbQ"
+# =====================================
+# توکن واقعی ربات مادر را اینجا بگذار
+MAIN_BOT_TOKEN = "8705315410:AAHFhgOJwRd9WhxIdAgn-Eh3zsIKu372S5k"
 
-# =========================
-# فقط یک دکمه
-# =========================
+# =====================================
+# دکمه ساخت ربات
+# =====================================
 bot_keyboard = ReplyKeyboardMarkup(
     [["🤖 ساخت ربات"]],
     resize_keyboard=True
 )
 
+# ذخیره وضعیت کاربران
 users = {}
+
+# جلوگیری از اجرای چندباره ربات فرزند
 running_bots = {}
 
-# =====================================================
+# =====================================
 # ربات فرزند (موزیک یاب)
-# =====================================================
+# =====================================
 
 async def child_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -41,7 +45,9 @@ async def child_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def child_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.message.text
 
-    await update.message.reply_text("🔎 در حال جستجوی موزیک...")
+    await update.message.reply_text(
+        "🔎 در حال جستجوی موزیک..."
+    )
 
     ydl_opts = {
         "format": "bestaudio/best",
@@ -59,11 +65,13 @@ async def child_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if "entries" in info:
                 info = info["entries"][0]
 
-            title = info.get("title", "music")
+            title = info.get("title", "Music")
             file_path = ydl.prepare_filename(info)
 
             if not os.path.exists(file_path):
-                await update.message.reply_text("❌ فایل موزیک پیدا نشد")
+                await update.message.reply_text(
+                    "❌ فایل موزیک پیدا نشد"
+                )
                 return
 
             with open(file_path, "rb") as audio_file:
@@ -73,7 +81,9 @@ async def child_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     caption=f"🎧 {title}"
                 )
 
-            await update.message.reply_text("✅ موزیک ارسال شد")
+            await update.message.reply_text(
+                "✅ موزیک با موفقیت ارسال شد"
+            )
 
             if os.path.exists(file_path):
                 os.remove(file_path)
@@ -81,7 +91,7 @@ async def child_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception:
         await update.message.reply_text(
             "❌ دانلود موزیک انجام نشد\n"
-            "ممکن است مشکل از هاست یا اتصال سرور باشد"
+            "ممکن است مشکل از هاست یا محدودیت سرور باشد"
         )
 
 
@@ -131,9 +141,9 @@ def start_child_bot(token):
     running_bots[token] = True
 
 
-# =====================================================
+# =====================================
 # ربات مادر
-# =====================================================
+# =====================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -145,7 +155,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    text = update.message.text
+    text = update.message.text.strip()
 
     # کلیک روی ساخت ربات
     if text == "🤖 ساخت ربات":
@@ -158,12 +168,12 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # دریافت توکن
+    # دریافت توکن ربات فرزند
     if (
         user_id in users
         and users[user_id].get("step") == "waiting_token"
     ):
-        child_token = text.strip()
+        child_token = text
 
         try:
             start_child_bot(child_token)
@@ -184,9 +194,9 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
 
-# =====================================================
-# اجرا
-# =====================================================
+# =====================================
+# اجرای ربات مادر
+# =====================================
 
 app = ApplicationBuilder().token(MAIN_BOT_TOKEN).build()
 
