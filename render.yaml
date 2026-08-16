@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: telegram-php-bot
-    runtime: docker
-    plan: free
-
-    envVars:
-      - key: BOT_TOKEN
-        sync: false
