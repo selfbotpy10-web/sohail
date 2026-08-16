@@ -1,6 +1,2 @@
 index.php
-config.php
-composer.json
-Dockerfile
-render.yaml
-.gitignore
+index.html
